@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RUPA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400&amp;family=Noto+Sans+JP:wght@300;400&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #16537f; }
+    a { color: #f2efe3; text-decoration: none; }
+    a:hover { color: #ffffff; }
+    ::selection { background: rgba(242,239,227,0.25); }
+    @keyframes rupaFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @media (prefers-reduced-motion: reduce) { a { animation: none !important; } }
+  </style>
+</helmet>
+
+<x-import component-from-global-scope="rupa-water" from="./water.js" refraction="{{ refraction }}" highlight="{{ highlight }}" idle="{{ idle }}" amplitude="{{ amplitude }}" hint-size="100%,100%"></x-import>
+
+<!-- background dim while a possibility is open -->
+<div style="position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(120% 120% at 50% 55%, rgba(8,28,48,0) 45%, rgba(8,28,48,0.24) 100%); opacity: {{ overlayOpacity }}; transition: opacity 0.8s ease;"></div>
+
+<!-- central content -->
+<div data-screen-label="RUPA Top" style="position: fixed; inset: 0; z-index: 2; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Jost', 'Noto Sans JP', sans-serif; color: #f2efe3;">
+
+  <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-6vh);">
+    <div style="font-weight: 100; font-size: clamp(72px, 12.5vw, 176px); letter-spacing: 0.06em; line-height: 1; color: #f2efe3; user-select: none; text-shadow: 0 1px 30px rgba(10,40,70,0.15);">RUPA</div>
+
+    <div style="margin-top: clamp(28px, 4.5vh, 52px); width: min(90vw, 640px); min-height: 92px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px;">
+      <div style="opacity: {{ op }}; transition: opacity 0.55s ease; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+        <div style="font-family: {{ quoteFont }}; font-weight: 300; font-size: clamp(15px, 1.55vw, 22px); line-height: 1.6; letter-spacing: 0.02em; color: rgba(245,243,233,0.95); text-align: center; padding: 0 24px; text-wrap: pretty;">{{ quoteText }}</div>
+        <a href="{{ url }}" target="_blank" rel="noopener" style="pointer-events: auto; font-family: {{ authorFont }}; font-weight: 300; font-size: clamp(12px, 1.05vw, 15px); letter-spacing: 0.04em; color: rgba(245,243,233,0.72); border-bottom: 1px solid rgba(245,243,233,0);" style-hover="color: #ffffff; border-bottom: 1px solid rgba(245,243,233,0.45);">&#8212; {{ authorText }}</a>
+      </div>
+    </div>
+
+    <div style="margin-top: clamp(28px, 4.5vh, 48px); display: flex; align-items: center; gap: 26px; pointer-events: auto;">
+      <a href="#" role="button" onClick="{{ toggleLang }}" style="font-family: 'Jost', 'Noto Sans JP', sans-serif; font-weight: 300; font-size: 13px; letter-spacing: 0.28em; color: rgba(245,243,233,0.82); padding: 8px 4px 10px; border-bottom: 1px solid rgba(245,243,233,0);" style-hover="color: #ffffff; border-bottom: 1px solid rgba(245,243,233,0.5);">{{ langLabel }}</a>
+    </div>
+  </div>
+</div>
+
+<!-- floating project entrances (bottom) -->
+<div aria-label="RUPA projects" style="position: fixed; left: 0; right: 0; bottom: clamp(74px, 13vh, 128px); z-index: 3; pointer-events: none; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: clamp(26px, 6vw, 88px); padding: 0 24px; font-family: 'Jost', 'Noto Sans JP', sans-serif;">
+  <sc-for list="{{ sites }}" as="s" hint-placeholder-count="4">
+    <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" data-orbit="1" data-site-idx="{{ s.idx }}" onClick="{{ s.onClick }}" onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" onFocus="{{ s.onFocus }}" onBlur="{{ s.onBlur }}" style="{{ s.labelStyle }}">
+      <span style="{{ s.dotStyle }}"></span>
+      <span style="{{ s.nameStyle }}">{{ s.name }}</span>
+    </a>
+  </sc-for>
+</div>
+
+<!-- bottom hairline -->
+<div style="position: fixed; bottom: clamp(28px, 5vh, 56px); left: 50%; transform: translateX(-50%); width: min(72vw, 920px); height: 1px; background: rgba(245,243,233,0.5); z-index: 2; pointer-events: none;"></div>
+
+<!-- desktop floating panel (single, smart-positioned) -->
+<div id="rupaPanel" data-orbit="1" onMouseEnter="{{ panelEnter }}" onMouseLeave="{{ panelLeave }}" style="position: fixed; z-index: 5; left: {{ panelLeft }}px; top: {{ panelTop }}px; width: 268px; display: {{ panelDisplay }}; flex-direction: column; gap: 11px; padding: 20px 22px; background: linear-gradient(180deg, rgba(11,38,60,0.78), rgba(11,38,60,0.66)); border: 1px solid rgba(245,243,233,0.13); border-radius: 2px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 50px rgba(6,22,38,0.35); opacity: {{ panelOpacity }}; transition: opacity 0.45s ease, left 0.4s ease, top 0.4s ease; pointer-events: {{ panelPointer }}; font-family: 'Jost', 'Noto Sans JP', sans-serif;">
+  <div style="font-family: 'Jost', sans-serif; font-weight: 300; font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase; color: #ffffff;">{{ panelName }}</div>
+  <div style="font-family: {{ panelDescFont }}; font-weight: 300; font-size: 12.5px; line-height: 1.95; letter-spacing: 0.01em; color: rgba(245,243,233,0.8); text-wrap: pretty;">{{ panelDesc }}</div>
+  <a href="{{ panelUrl }}" target="_blank" rel="noopener noreferrer" style="font-family: 'Jost', 'Noto Sans JP', sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.24em; color: rgba(245,243,233,0.9); border-bottom: 1px solid rgba(245,243,233,0.3); padding-bottom: 3px; align-self: flex-start;" style-hover="color: #fff; border-bottom-color: rgba(245,243,233,0.7);">{{ viewLabel }}</a>
+</div>
+
+<!-- mobile bottom sheet -->
+<div data-orbit="1" style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: {{ sheetDisplay }}; padding: 22px 24px calc(28px + env(safe-area-inset-bottom)); background: linear-gradient(to top, rgba(9,34,56,0.92), rgba(9,34,56,0.74)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(245,243,233,0.14); opacity: {{ sheetOpacity }}; transform: translateY({{ sheetY }}); transition: opacity 0.4s ease, transform 0.45s ease; pointer-events: {{ sheetPointer }}; font-family: 'Jost', 'Noto Sans JP', sans-serif;">
+  <div style="max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="font-family: 'Jost', sans-serif; font-weight: 300; font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase; color: #fff;">{{ sheetName }}</div>
+      <button onClick="{{ closeSheet }}" aria-label="Close" style="background: none; border: none; color: rgba(245,243,233,0.7); font-size: 22px; line-height: 1; padding: 4px 6px; cursor: pointer;">&#215;</button>
+    </div>
+    <div style="font-family: {{ panelDescFont }}; font-weight: 300; font-size: 14px; line-height: 1.9; color: rgba(245,243,233,0.85); text-wrap: pretty;">{{ sheetDesc }}</div>
+    <a href="{{ sheetUrl }}" target="_blank" rel="noopener noreferrer" style="font-family: 'Jost', 'Noto Sans JP', sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.24em; color: #fff; border-bottom: 1px solid rgba(245,243,233,0.4); padding-bottom: 4px; align-self: flex-start;">{{ viewLabel }}</a>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;refraction&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;水面&quot;, &quot;label&quot;: &quot;屈折の強さ&quot; },
+  &quot;highlight&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;水面&quot;, &quot;label&quot;: &quot;ハイライト&quot; },
+  &quot;amplitude&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0, &quot;max&quot;: 2.5, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;水面&quot;, &quot;label&quot;: &quot;波紋の強さ&quot; },
+  &quot;idle&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;水面&quot;, &quot;label&quot;: &quot;常時ゆらぎ&quot; }
+}">
+const QUOTES = [
+  { en: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt", ja: "未来は、夢を持つことのすばらしさを信じている人のものだ。", authorJa: "エレノア・ルーズベルト", url: "https://en.wikipedia.org/wiki/Eleanor_Roosevelt" },
+  { en: "The future is not a gift. It is an achievement.", author: "Robert Kennedy", ja: "未来は贈り物ではない。それは達成なのである。", authorJa: "ロバート・ケネディ", url: "https://en.wikipedia.org/wiki/Robert_F._Kennedy" },
+  { en: "I like the dreams of the future better than the history of the past.", author: "Thomas Jefferson", ja: "私は、過去の歴史よりも未来の夢を好む。", authorJa: "トーマス・ジェファーソン", url: "https://en.wikipedia.org/wiki/Thomas_Jefferson" },
+  { en: "We surely know by some nameless instinct more about our futures than we think we know.", author: "Arthur Conan Doyle", ja: "我々は自分でそう思うよりも、名状しがたい本能によって未来を確かに知っているのである。", authorJa: "アーサー・コナン・ドイル", url: "https://en.wikipedia.org/wiki/Arthur_Conan_Doyle" },
+  { en: "When you look at the possibilities instead of the problems, the future is filled with endless opportunities.", author: "Zig Ziglar", ja: "問題でなく可能性に目を向けたなら、未来は際限のないチャンスに満ちている。", authorJa: "ジグ・ジグラー", url: "https://en.wikipedia.org/wiki/Zig_Ziglar" },
+  { en: "As for the future, your task is not to foresee it, but to enable it.", author: "Antoine de Saint-Exup\u00e9ry", ja: "未来に関する限り、あなたの仕事は予見することではなく、可能にすることだ。", authorJa: "アントワーヌ・ド・サン＝テグジュペリ", url: "https://en.wikipedia.org/wiki/Antoine_de_Saint-Exup%C3%A9ry" },
+  { en: "One faces the future with one's past.", author: "Pearl S. Buck", ja: "人は、過去とともに未来に向き合う。", authorJa: "パール・S・バック", url: "https://en.wikipedia.org/wiki/Pearl_S._Buck" },
+  { en: "I never think of the future. It comes soon enough.", author: "Albert Einstein", ja: "未来のことは考えない。すぐに来るのだからだ。", authorJa: "アルベルト・アインシュタイン", url: "https://en.wikipedia.org/wiki/Albert_Einstein" },
+  { en: "Men do not sufficiently realise that their future is in their own hands.", author: "Henri Bergson", ja: "人は、未来がその手の中にあることを十分に理解していない。", authorJa: "アンリ・ベルクソン", url: "https://en.wikipedia.org/wiki/Henri_Bergson" },
+  { en: "You can never plan the future by the past.", author: "Edmund Burke", ja: "過去によって未来を計画することは、決してできないのだ。", authorJa: "エドマンド・バーク", url: "https://en.wikipedia.org/wiki/Edmund_Burke" },
+  { en: "If you do not think about the future, you cannot have one.", author: "John Galsworthy", ja: "未来のことを考えなければ、それを手にすることはできない。", authorJa: "ジョン・ゴールズワージー", url: "https://en.wikipedia.org/wiki/John_Galsworthy" }
+];
+
+// サイト情報は一元管理（追加・修正しやすい構造）
+const SITES = [
+  { name: "WatchLabo", dur: 6.5, delay: 0,
+    descJa: "機械式時計の構造と組み立て工程を、3Dシミュレーションで体験できる学習サイトです。部品を一つずつ取り付けながら、精密な時計が完成するまでの仕組みを楽しく学べます。",
+    descEn: "An interactive 3D learning site where users can experience the structure and assembly process of a mechanical watch. By placing each part step by step, users can understand how a precision timepiece comes together.",
+    url: "https://kanitaste.github.io/watchlabo/index.html" },
+  { name: "Higashikaruizawa", dur: 7.2, delay: 0.8,
+    descJa: "群馬県と軽井沢周辺の風景をモチーフに制作した、架空の町「東軽井沢」の公式サイトです。観光、暮らし、地域情報を通して、どこか懐かしく心地よい町の世界を楽しめます。",
+    descEn: "A fictional town website inspired by the landscapes of Gunma and the Karuizawa area. Through tourism, daily life, and local information, it presents a quiet, nostalgic, and inviting world.",
+    url: "https://kanitaste.github.io/higashikaruizawa/" },
+  { name: "ChemistryLabo", dur: 6.8, delay: 0.4,
+    descJa: "元素や試薬を組み合わせ、色や温度、pH、気体の発生などの化学変化を観察できる実験シミュレーションです。安全に繰り返し試しながら、化学反応の仕組みを直感的に学べます。",
+    descEn: "A chemistry experiment simulator where users can combine elements and reagents to observe changes in color, temperature, pH, and gas generation. It offers an intuitive way to explore chemical reactions safely.",
+    url: "https://kanitaste.github.io/labo/" },
+  { name: "GeoQuiz", dur: 7.6, delay: 1.2,
+    descJa: "国名や地域名を地図上の正しい位置に配置して遊ぶ、ドラッグ操作の地理クイズゲームです。形や位置関係を見ながら、世界の国々をパズル感覚で楽しく覚えられます。",
+    descEn: "A drag-and-drop geography quiz game where users place country and region names in the correct positions on a map. It helps players learn the world through shapes, locations, and spatial relationships.",
+    url: "https://kanitaste.github.io/map/" }
+];
+
+class Component extends DCLogic {
+  state = { i: Math.floor(Math.random() * QUOTES.length), ja: false, op: 1, active: null, pl: 0, pt: 0, pready: false };
+
+  componentDidMount() {
+    this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    this.forceUpdate();
+    if (!this.reduced) this._timer = setInterval(() => this.cycle(), 11000);
+
+    this._onKey = (e) => { if (e.key === 'Escape') this.setActive(null); };
+    this._onDown = (e) => {
+      if (this.state.active == null) return;
+      if (e.target.closest && e.target.closest('[data-orbit]')) return;
+      this.setActive(null);
+    };
+    this._onResize = () => {
+      if (this.state.active != null && !this.coarse) {
+        const p = this.computePanel(this.state.active);
+        this.setState({ pl: p.left, pt: p.top });
+      }
+    };
+    window.addEventListener('keydown', this._onKey);
+    window.addEventListener('resize', this._onResize);
+    document.addEventListener('pointerdown', this._onDown, true);
+  }
+  componentWillUnmount() {
+    clearInterval(this._timer); clearTimeout(this._t2); clearTimeout(this._clearT); clearTimeout(this._langT);
+    window.removeEventListener('keydown', this._onKey);
+    window.removeEventListener('resize', this._onResize);
+    document.removeEventListener('pointerdown', this._onDown, true);
+  }
+
+  computePanel(i) {
+    const vw = window.innerWidth, vh = window.innerHeight, m = 16;
+    const el = document.querySelector('[data-site-idx="' + i + '"]');
+    const pw = 268, ph = 210, gap = 16;
+    let lx = vw / 2, lbottom = vh / 2, ltop = vh / 2;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      lx = r.left + r.width / 2; lbottom = r.bottom; ltop = r.top;
+    }
+    let left = Math.min(Math.max(lx - pw / 2, m), vw - pw - m);
+    let top;
+    if (ltop - gap - ph >= m) top = ltop - gap - ph;           // prefer above (labels sit low)
+    else if (lbottom + gap + ph <= vh - m) top = lbottom + gap; // else below
+    else top = Math.min(Math.max((vh - ph) / 2, m), vh - ph - m);
+    return { left: Math.round(left), top: Math.round(top) };
+  }
+
+  setActive(i) {
+    clearTimeout(this._clearT);
+    const st = { active: i };
+    if (i != null) {
+      const p = this.computePanel(i);
+      st.pl = p.left; st.pt = p.top; st.pready = true;
+    }
+    this.setState(st);
+  }
+  scheduleClear() { clearTimeout(this._clearT); this._clearT = setTimeout(() => this.setState({ active: null, pready: false }), 220); }
+
+  cycle() {
+    this.setState({ op: 0 });
+    clearTimeout(this._t2);
+    this._t2 = setTimeout(() => {
+      this.setState(s => {
+        let n = s.i;
+        if (QUOTES.length > 1) { while (n === s.i) n = Math.floor(Math.random() * QUOTES.length); }
+        return { i: n, op: 1 };
+      });
+    }, 900);
+  }
+
+  toggleLang() {
+    this.setState({ op: 0 });
+    clearTimeout(this._langT);
+    this._langT = setTimeout(() => this.setState(s => ({ ja: !s.ja, op: 1 })), 280);
+  }
+
+  renderVals() {
+    const q = QUOTES[this.state.i];
+    const ja = this.state.ja;
+    const active = this.state.active;
+    const coarse = this.coarse;
+    const reduced = this.reduced;
+
+    const sites = SITES.map((site, i) => {
+      const on = active === i;
+      const dim = active != null && !on;
+      const floatAnim = reduced ? "none" : ("rupaFloat " + site.dur + "s ease-in-out " + site.delay + "s infinite");
+      const labelStyle = "pointer-events:auto; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:11px; text-decoration:none; outline:none;" +
+        " opacity:" + (dim ? "0.34" : (on ? "1" : "0.72")) + "; transition: opacity 0.5s ease; animation:" + floatAnim + ";";
+      const dotStyle = "width:" + (on ? "8px" : "6px") + "; height:" + (on ? "8px" : "6px") +
+        "; border-radius:50%; border:1px solid rgba(245,243,233," + (on ? "0.95" : "0.5") +
+        "); background: rgba(245,243,233," + (on ? "0.55" : "0") + "); box-shadow:" + (on ? "0 0 10px rgba(200,225,240,0.4)" : "none") + "; transition: all 0.5s ease;";
+      const nameStyle = "font-family:'Jost',sans-serif; font-weight:300; font-size:clamp(12px,1.15vw,14px); letter-spacing:0.26em; text-transform:uppercase; white-space:nowrap; color: rgba(245,243,233," +
+        (on ? "1" : "0.88") + "); transition: color 0.5s ease;";
+
+      const onClick = (e) => {
+        if (coarse) { if (active !== i) { e.preventDefault(); this.setActive(i); } }
+      };
+      const onEnter = () => { if (!coarse) this.setActive(i); };
+      const onLeave = () => { if (!coarse) this.scheduleClear(); };
+      const onFocus = () => this.setActive(i);
+      const onBlur = () => this.scheduleClear();
+
+      return { idx: i, name: site.name, url: site.url,
+        labelStyle, dotStyle, nameStyle,
+        onClick, onEnter, onLeave, onFocus, onBlur };
+    });
+
+    const activeSite = active != null ? SITES[active] : null;
+    const sheetOpen = coarse && activeSite;
+    const panelOn = !coarse && activeSite && this.state.pready;
+    const desc = activeSite ? (ja ? activeSite.descJa : activeSite.descEn) : "";
+    const viewLabel = ja ? "プロジェクトを見る \u2192" : "VIEW PROJECT \u2192";
+
+    return {
+      op: this.state.op,
+      quoteText: ja ? q.ja : ("\u201c" + q.en + "\u201d"),
+      authorText: ja ? q.authorJa : q.author,
+      quoteFont: ja ? "'Noto Sans JP', sans-serif" : "'Jost', sans-serif",
+      authorFont: ja ? "'Noto Sans JP', sans-serif" : "'Jost', sans-serif",
+      url: q.url,
+      langLabel: ja ? "English" : "\u65e5\u672c\u8a9e",
+
+      sites,
+      overlayOpacity: active != null ? 1 : 0,
+
+      panelDisplay: coarse ? "none" : "flex",
+      panelLeft: this.state.pl,
+      panelTop: this.state.pt,
+      panelOpacity: panelOn ? 1 : 0,
+      panelPointer: panelOn ? "auto" : "none",
+      panelName: activeSite ? activeSite.name : "",
+      panelDesc: desc,
+      panelDescFont: ja ? "'Noto Sans JP', sans-serif" : "'Jost', sans-serif",
+      panelUrl: activeSite ? activeSite.url : "#",
+      viewLabel,
+      panelEnter: () => { if (!coarse && this.state.active != null) this.setActive(this.state.active); },
+      panelLeave: () => { if (!coarse) this.scheduleClear(); },
+
+      sheetDisplay: coarse ? "block" : "none",
+      sheetOpacity: sheetOpen ? 1 : 0,
+      sheetY: sheetOpen ? "0" : "100%",
+      sheetPointer: sheetOpen ? "auto" : "none",
+      sheetName: activeSite ? activeSite.name : "",
+      sheetDesc: desc,
+      sheetUrl: activeSite ? activeSite.url : "#",
+      closeSheet: (e) => { e.preventDefault(); this.setActive(null); },
+
+      refraction: this.props.refraction ?? 1,
+      highlight: this.props.highlight ?? 1,
+      idle: this.props.idle ?? 1,
+      amplitude: this.props.amplitude ?? 1,
+      toggleLang: (e) => { e.preventDefault(); this.toggleLang(); }
+    };
+  }
+}
+</script>
+</body>
+</html>
